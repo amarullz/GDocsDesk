@@ -29,8 +29,8 @@
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:hardwareAccelerated="true"
-            android:icon="Desk Docs"
-            android:label="Docs"
+            android:icon="@mipmap/ic_docs"
+            android:label="Docs Desk"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,7 +43,7 @@
             android:name=".SheetActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:hardwareAccelerated="true"
-            android:label="Desk Sheets"
+            android:label="Sheets Desk"
             android:icon="@mipmap/ic_sheets"
             android:exported="true">
             <intent-filter>
@@ -56,7 +56,7 @@
             android:name=".SlideActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:hardwareAccelerated="true"
-            android:label="Desk Slides"
+            android:label="Slides Desk"
             android:icon="@mipmap/ic_slides"
             android:exported="true">
             <intent-filter>
