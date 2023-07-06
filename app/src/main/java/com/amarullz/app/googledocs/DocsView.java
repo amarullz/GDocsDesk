@@ -3,7 +3,6 @@ package com.amarullz.app.googledocs;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
@@ -116,17 +115,11 @@ public class DocsView {
     });
 
     /* Zoom In & Out */
-    fabZoomIn.setOnClickListener(v -> {
-      setZoom(1);
-    });
-    fabZoomOut.setOnClickListener(v -> {
-      setZoom(-1);
-    });
+    fabZoomIn.setOnClickListener(v -> setZoom(1));
+    fabZoomOut.setOnClickListener(v -> setZoom(-1));
 
     /* Fab Menu */
-    fab.setOnClickListener(v -> {
-      fabShow(!fabOpened);
-    });
+    fab.setOnClickListener(v -> fabShow(!fabOpened));
   }
 
   /* Docs View Constructor */
