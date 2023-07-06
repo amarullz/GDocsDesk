@@ -11,3 +11,4 @@ This apps is only simple browser wrapper without any extended touch support, and
 ![Docs Editor](docs/ss5.jpg)
 ![Sheets Editor](docs/ss6.jpg)
 ![Slides Editor](docs/ss7.jpg)
+![Floating Action Buttons](docs/ss8.jpg)
