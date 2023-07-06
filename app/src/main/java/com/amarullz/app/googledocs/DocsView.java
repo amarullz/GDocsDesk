@@ -17,35 +17,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class DocsView {
+  /* WebView Variables */
   private final AppCompatActivity activity;
   private final String url;
   private final WebView webView;
   private String userAgent;
+  private final String userAgentLogin;
+  private final String userAgentApps;
   private boolean onLogin =false;
 
-  public void setUAG(boolean isLogin){
-    if (onLogin !=isLogin) {
-      onLogin =isLogin;
-      if (onLogin){
-        userAgent = "com.amarullz.apps.googledocs";
-      }
-      else {
-        userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.61";
-      }
-      activity.runOnUiThread(()->webView.getSettings().setUserAgentString(userAgent));
-    }
-  }
-
-  /* Init Floating Action Buttons */
+  /* Settings & Floating Actions Variables */
   private boolean fabOpened=false;
   private boolean isFullscreen=false;
   private int zoomSize=0;
+  private Toast zoomToast=null;
   private final FloatingActionButton fab;
   private final FloatingActionButton fabMouse;
   private final FloatingActionButton fabZoomOut;
   private final FloatingActionButton fabZoomIn;
   private final FloatingActionButton fabFullscreen;
 
+
+  /* Show/hide fab menu */
   private void fabShow(boolean show){
     if (show){
       fabMouse.animate().translationY(activity.getResources().getDimension(R.dimen.fab_move_mouse));
@@ -73,6 +66,8 @@ public class DocsView {
     }
     fabOpened=show;
   }
+
+  /* Set Fullscreen / Exit Fullscreen */
   private void setFullscreen(boolean fullscreen){
     if (fullscreen){
       activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -92,8 +87,7 @@ public class DocsView {
     isFullscreen=fullscreen;
   }
 
-  private Toast zoomToast=null;
-
+  /* Set WebView zoom */
   private void setZoom(int add){
     zoomSize+=add;
     if (zoomSize>6) zoomSize=6;
@@ -111,6 +105,7 @@ public class DocsView {
     zoomToast.show();
   }
 
+  /* Init Floating Action Buttons */
   public void initFab(){
     /* Fullscreen Button */
     fabFullscreen.setOnClickListener(v->{
@@ -126,6 +121,20 @@ public class DocsView {
     fab.setOnClickListener(v -> fabShow(!fabOpened));
   }
 
+  /* Set User Agents */
+  public void setUAG(boolean isLogin){
+    if (onLogin !=isLogin) {
+      onLogin =isLogin;
+      if (onLogin){
+        userAgent = userAgentLogin;
+      }
+      else {
+        userAgent = userAgentApps;
+      }
+      activity.runOnUiThread(()->webView.getSettings().setUserAgentString(userAgent));
+    }
+  }
+
   /* Docs View Constructor */
   @SuppressLint("SetJavaScriptEnabled")
   public DocsView(AppCompatActivity act, String start_url) {
@@ -135,7 +144,7 @@ public class DocsView {
     /* Set Content View */
     activity.setContentView(R.layout.activity_main);
 
-    /* Init Fabs */
+    /* Init FAB */
     fab=activity.findViewById(R.id.fab);
     fabMouse=activity.findViewById(R.id.fab_mouse);
     fabZoomOut=activity.findViewById(R.id.fab_zoomout);
@@ -143,11 +152,15 @@ public class DocsView {
     fabFullscreen=activity.findViewById(R.id.fab_fullscreen);
     initFab();
 
-    /* Init Webview */
+    /* Init WebView */
     webView = activity.findViewById(R.id.webview);
     webView.setWebViewClient(new WebViewClient());
     WebSettings webSettings = webView.getSettings();
     webSettings.setJavaScriptEnabled(true);
+
+    /* Init User Agents */
+    userAgentLogin = activity.getResources().getString(R.string.uag_login);
+    userAgentApps = activity.getResources().getString(R.string.uag_apps);
     setUAG(true);
 
     /* WebView Settings */
@@ -195,7 +208,8 @@ public class DocsView {
         }
         final String req_url=ch_url;
         if (request.getUrl().getHost().contains("drive.google")||
-            request.getUrl().getHost().contains("docs.google")||docs_redirect){
+            request.getUrl().getHost().contains("docs.google")||
+            docs_redirect){
           if (onLogin) {
             setUAG(false);
             activity.runOnUiThread(()->webView.loadUrl(req_url));

@@ -1,4 +1,7 @@
 <resources>
+    <string name="uag_login" translatable="false">com.amarullz.apps.googledocs</string>
+    <string name="uag_apps" translatable="false">Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.61</string>
+
     <string name="task_docs" translatable="false">com.amarullz.app.googledocs.docs</string>
     <string name="task_sheets" translatable="false">com.amarullz.app.googledocs.sheets</string>
     <string name="task_slides" translatable="false">com.amarullz.app.googledocs.slides</string>
