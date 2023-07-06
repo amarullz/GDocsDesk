@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Google Docs Desk</string>
+    <string name="app_docs">Docs Desk</string>
+    <string name="app_sheets">Sheets Desk</string>
+    <string name="app_slides">Slides Desk</string>
+
+    <string name="fab_zoom_in">Perbesar</string>
+    <string name="fab_zoom_out">Perkecil</string>
+    <string name="fab_mouse">Emulasi Mouse</string>
+    <string name="fab_fullscreen">Layar Penuh</string>
+    <string name="fab_fullscreen_exit">Keluar Layar Penuh</string>
+    <string name="fab_settings">Pengaturan</string>
+    <string name="zoom_toast">Zoom %</string>
+</resources>

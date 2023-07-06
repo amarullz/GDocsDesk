@@ -103,7 +103,11 @@ public class DocsView {
 
     if (zoomToast!=null)
       zoomToast.cancel();
-    zoomToast=Toast.makeText(activity, "Zoom "+zoomValue+"%", Toast.LENGTH_SHORT);
+
+    String toastText=
+        activity.getResources().getString(R.string.zoom_toast).replace("%",
+            zoomValue+"%");
+    zoomToast=Toast.makeText(activity, toastText, Toast.LENGTH_SHORT);
     zoomToast.show();
   }
 

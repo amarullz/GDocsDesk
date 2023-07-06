@@ -1,15 +1,17 @@
 <resources>
+    <string name="task_docs" translatable="false">com.amarullz.app.googledocs.docs</string>
+    <string name="task_sheets" translatable="false">com.amarullz.app.googledocs.sheets</string>
+    <string name="task_slides" translatable="false">com.amarullz.app.googledocs.slides</string>
+
     <string name="app_name">Google Docs Desk</string>
     <string name="app_docs">Docs Desk</string>
     <string name="app_sheets">Sheets Desk</string>
     <string name="app_slides">Slides Desk</string>
-    <string name="task_docs">com.amarullz.app.googledocs.docs</string>
-    <string name="task_sheets">com.amarullz.app.googledocs.sheets</string>
-    <string name="task_slides">com.amarullz.app.googledocs.slides</string>
     <string name="fab_zoom_in">Zoom In</string>
     <string name="fab_zoom_out">Zoom Out</string>
     <string name="fab_mouse">Mouse Emulation</string>
     <string name="fab_fullscreen">Fullscreen</string>
     <string name="fab_fullscreen_exit">Exit Fullscreen</string>
     <string name="fab_settings">Settings</string>
+    <string name="zoom_toast">Zoom %</string>
 </resources>
