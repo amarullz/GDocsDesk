@@ -12,4 +12,7 @@
     <string name="fab_fullscreen_exit">Keluar Layar Penuh</string>
     <string name="fab_settings">Pengaturan</string>
     <string name="zoom_toast">Zoom %</string>
+    <string name="fab_home">Beranda</string>
+    <string name="fab_back">Kembali</string>
+    <string name="fab_close">Tutup</string>
 </resources>

@@ -25,7 +25,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,6 +67,8 @@ public class DocsView {
   private final FloatingActionButton fabZoomOut;
   private final FloatingActionButton fabZoomIn;
   private final FloatingActionButton fabFullscreen;
+  private final FloatingActionButton fabHome;
+  private final FloatingActionButton fabBack;
 
   /* Helpers */
   private static long tick(){
@@ -82,10 +83,16 @@ public class DocsView {
       fabZoomIn.animate().translationY(activity.getResources().getDimension(R.dimen.fab_move_zoomin));
       fabFullscreen.animate().translationY(activity.getResources().getDimension(R.dimen.fab_move_fullscreen));
 
+      fabHome.animate().translationX(activity.getResources().getDimension(R.dimen.fab_move_home));
+      fabBack.animate().translationX(activity.getResources().getDimension(R.dimen.fab_move_back));
+
+
       fabMouse.animate().rotation(0);
       fabZoomOut.animate().rotation(0);
       fabZoomIn.animate().rotation(0);
       fabFullscreen.animate().rotation(0);
+      fabHome.animate().rotation(0);
+      fabBack.animate().rotation(0);
       fab.animate().rotation(90);
     }
     else{
@@ -93,11 +100,15 @@ public class DocsView {
       fabZoomOut.animate().translationY(0);
       fabZoomIn.animate().translationY(0);
       fabFullscreen.animate().translationY(0);
+      fabHome.animate().translationX(0);
+      fabBack.animate().translationX(0);
 
       fabMouse.animate().rotation(90);
       fabZoomOut.animate().rotation(90);
       fabZoomIn.animate().rotation(90);
       fabFullscreen.animate().rotation(90);
+      fabHome.animate().rotation(90);
+      fabBack.animate().rotation(90);
       fab.animate().rotation(0);
     }
     fabOpened=show;
@@ -159,8 +170,23 @@ public class DocsView {
     fabZoomIn.setOnClickListener(v -> setZoom(1));
     fabZoomOut.setOnClickListener(v -> setZoom(-1));
 
+    /* Navigation */
+    fabHome.setOnClickListener(v->{
+      webView.clearHistory();
+      webView.loadUrl(url);
+      fabShow(false);
+    });
+    fabBack.setOnClickListener(v->{
+      if (webView.canGoBack())
+        webView.goBack();
+      fabShow(false);
+    });
+
     /* Fab Menu */
-    fab.setOnClickListener(v -> fabShow(!fabOpened));
+    fab.setOnClickListener(v -> {
+      fabShow(!fabOpened);
+      vibrate(50);
+    });
   }
 
   /* Set User Agents */
@@ -192,6 +218,8 @@ public class DocsView {
     fabZoomOut=activity.findViewById(R.id.fab_zoomout);
     fabZoomIn=activity.findViewById(R.id.fab_zoomin);
     fabFullscreen=activity.findViewById(R.id.fab_fullscreen);
+    fabHome=activity.findViewById(R.id.fab_home);
+    fabBack=activity.findViewById(R.id.fab_back);
     initFab();
 
     /* Init WebView */
@@ -494,7 +522,7 @@ public class DocsView {
     public void run() {
       if (vmDowned){
         if (!vmMoved&&!vmOnWaitClick&&!vmIsScroll&&!vmIs2Finger&&(tick()-vmDownTick>500)){
-          vibrate(25);
+          vibrate(40);
           Log.d(_TAG,"RIGHT MOUSE DOWN - HOLD");
           mouseEv(3,0,0,0,0,0);
           Log.d(_TAG,"RIGHT MOUSE UP - HOLD");

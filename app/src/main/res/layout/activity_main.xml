@@ -31,6 +31,35 @@
     </com.amarullz.app.googledocs.WebLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        android:contentDescription="@string/fab_home"
+        android:rotation="180"
+        android:tooltipText="@string/fab_home"
+        app:elevation="10dp"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_home"
+        app:tint="@android:color/white"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        android:contentDescription="@string/fab_back"
+        android:rotation="180"
+        android:tooltipText="@string/fab_back"
+        app:elevation="10dp"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_back"
+        app:tint="@android:color/white"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_fullscreen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

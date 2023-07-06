@@ -15,6 +15,9 @@
     <string name="fab_mouse">Mouse Emulation</string>
     <string name="fab_fullscreen">Fullscreen</string>
     <string name="fab_fullscreen_exit">Exit Fullscreen</string>
+    <string name="fab_home">Home</string>
+    <string name="fab_back">Back</string>
+    <string name="fab_close">Close</string>
     <string name="fab_settings">Settings</string>
     <string name="zoom_toast">Zoom %</string>
 </resources>
