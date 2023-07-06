@@ -1,16 +1,25 @@
 package com.amarullz.app.googledocs;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
+
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -25,8 +34,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DocsView {
+  public static final String _TAG = "DOCVIEW";
+
   /* WebView Variables */
   private final AppCompatActivity activity;
   private final String url;
@@ -38,11 +51,12 @@ public class DocsView {
 
   /* Cursor Related Variables */
   public final ImageView cursor;
-  public final RelativeLayout webLayout;
+  public final WebLayout webLayout;
   private PointerIcon pointerActive;
   private final ArrayList<PointerIcon> pointers;
-  private int mouseX=0;
-  private int mouseY=0;
+  private float mouseX=0;
+  private float mouseY=0;
+  private boolean isCursorVisible=false;
 
   /* Settings & Floating Actions Variables */
   private boolean fabOpened=false;
@@ -55,6 +69,10 @@ public class DocsView {
   private final FloatingActionButton fabZoomIn;
   private final FloatingActionButton fabFullscreen;
 
+  /* Helpers */
+  private static long tick(){
+    return System.currentTimeMillis();
+  }
 
   /* Show/hide fab menu */
   private void fabShow(boolean show){
@@ -131,6 +149,12 @@ public class DocsView {
       fabShow(false);
     });
 
+    /* Virtual Mouse */
+    fabMouse.setOnClickListener(v->{
+      setCursorVisibility(!isCursorVisible);
+      fabShow(false);
+    });
+
     /* Zoom In & Out */
     fabZoomIn.setOnClickListener(v -> setZoom(1));
     fabZoomOut.setOnClickListener(v -> setZoom(-1));
@@ -191,6 +215,7 @@ public class DocsView {
     pointers.add(PointerIcon.getSystemIcon(activity,PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW));
     pointers.add(PointerIcon.getSystemIcon(activity,PointerIcon.TYPE_VERTICAL_DOUBLE_ARROW));
     pointerActive=pointers.get(0);
+    setCursorVisibility(false);
     initVirtualMouse();
 
     /* WebView Settings */
@@ -255,8 +280,38 @@ public class DocsView {
         }
         return false;
       }
+      @Override
+      public void onPageFinished(WebView view, String url) {
+        /* Add Clipboard Support & Tab Handling */
+        super.onPageFinished(view, url);
+        webView.evaluateJavascript("window.addEventListener('keydown',function" +
+                "(e){console.log('CCLOG KEY = '+e.keyCode); if (e.keyCode==9){e" +
+                ".preventDefault();" +
+                "e" +
+                ".stopPropagation();}});"
+            ,null);
+        webView.evaluateJavascript("navigator.clipboard.readText=function(){"+
+                "return new Promise(resolve => {resolve(_DOCJSAPI.readClipboardText())" +
+                "})"+
+                "}"
+            ,null);
+      }
     });
+    webView.addJavascriptInterface(new DocViewJsInterface(), "_DOCJSAPI");
     webView.loadUrl(url);
+  }
+
+  public class DocViewJsInterface{
+    @JavascriptInterface
+    public String readClipboardText() {
+      ClipboardManager clipboard =
+          (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
+      ClipData dat=clipboard.getPrimaryClip();
+      if (dat.getItemCount()>0) {
+        return (String) clipboard.getPrimaryClip().getItemAt(0).getText();
+      }
+      return null;
+    }
   }
 
   private void updatePointerIcon(){
@@ -295,6 +350,7 @@ public class DocsView {
   }
   private void setCursorVisibility(boolean visible){
     cursor.setVisibility(visible?View.VISIBLE:View.INVISIBLE);
+    isCursorVisible=visible;
   }
   private int dpx(float dp) {
     final float scale = activity.getResources().getDisplayMetrics().density;
@@ -303,8 +359,8 @@ public class DocsView {
   private void mouseEv(int type, float x, float y,
                       float scrollX, float scrollY, long elapsed){
     try {
-      mouseX += dpx(x);
-      mouseY += dpx(y);
+      mouseX += (x);
+      mouseY += (y);
       if (mouseX < 0) mouseX = 0;
       if (mouseY < 0) mouseY = 0;
       if (mouseX > webView.getWidth()) mouseX = webView.getWidth();
@@ -402,7 +458,238 @@ public class DocsView {
     }catch (Exception ignored){}
   }
 
-  private void initVirtualMouse(){
+  /* Vibrating */
+  private void vibrate(int duration){
+    Vibrator vibrator =
+        (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      vibrator.vibrate(VibrationEffect.createOneShot(duration,
+          VibrationEffect.DEFAULT_AMPLITUDE));
+    }
+    else{
+      vibrator.vibrate(duration);
+    }
+  }
 
+  /* Virtual Mouse Variables */
+  private boolean vmIs2Finger=false;
+  private boolean vmIsScroll=false;
+  private boolean vmDowned=false;
+  private boolean vmFlingScroll=false;
+  private boolean vmOnWaitClick=false;
+  private boolean vmMoved=false;
+  private float vmCurrX=0f;
+  private float vmCurrY=0f;
+  private float vmLastX=0f;
+  private float vmLastY=0f;
+  private float vmVelocityX=0f;
+  private float vmVelocityY=0f;
+  private long vmDownTick=0;
+  private long vmDragTick=0;
+  private Timer vmMoveInterval=null;
+  private Timer vmFlingInterval=null;
+  private Timer vmWaitClick=null;
+  private class VmMoveTask extends TimerTask {
+    @Override
+    public void run() {
+      if (vmDowned){
+        if (!vmMoved&&!vmOnWaitClick&&!vmIsScroll&&!vmIs2Finger&&(tick()-vmDownTick>500)){
+          vibrate(25);
+          Log.d(_TAG,"RIGHT MOUSE DOWN - HOLD");
+          mouseEv(3,0,0,0,0,0);
+          Log.d(_TAG,"RIGHT MOUSE UP - HOLD");
+          mouseEv(4,0,0,0,0,0);
+          vmDowned=false;
+          return;
+        }
+        if (vmCurrX!=0f||vmCurrY!=0f){
+          if (!vmMoved){
+            if (Math.abs(vmCurrX)+Math.abs(vmCurrY)>dpx(1)){
+              vmMoved=true;
+              if (vmIs2Finger||vmIsScroll){
+                Log.d(_TAG,"SCROLLING..");
+              }
+              else{
+                if (vmOnWaitClick){
+                  vmDragTick=tick();
+                  mouseEv(6,0,0,0,0,0);
+                }
+                Log.d(_TAG,"MOVING"+((vmOnWaitClick)?" - DRAG":"..."));
+              }
+            }
+          }
+          if (vmMoved){
+            if (vmIs2Finger||vmIsScroll){
+              mouseEv(8,0,0,vmCurrX,vmCurrY,0);
+            }
+            else{
+              if (vmOnWaitClick){
+                // MOVE DRAG
+                mouseEv(5,vmCurrX,vmCurrY,0,0,
+                    tick()-vmDownTick
+                );
+              }
+              else{
+                mouseEv(0,vmCurrX,vmCurrY,0,0,0);
+              }
+            }
+            /* calculate fling velocity */
+            if (Math.abs(vmCurrX)+Math.abs(vmCurrY)>dpx(1)){
+              vmVelocityX=vmCurrX;
+              vmVelocityY=vmCurrY;
+            }
+            else{
+              vmVelocityX=0f;
+              vmVelocityY=0f;
+            }
+            vmCurrY=vmCurrX=0;
+          }
+        }
+      }
+    }
+  }
+  private class VmFlingTask extends TimerTask{
+    @Override
+    public void run() {
+      if (Math.abs(vmVelocityX)>=1||Math.abs(vmVelocityY)>=1){
+        vmVelocityX=vmVelocityX*0.9f;
+        vmVelocityY=vmVelocityY*0.9f;
+        if (vmFlingScroll)
+          mouseEv(8,0,0,vmVelocityX,vmVelocityY,0);
+        else
+          mouseEv(0,vmVelocityX,vmVelocityY,0,0,0);
+      }
+      else{
+        Log.d(_TAG,"FLING END");
+        vmVelocityX=vmVelocityY=0f;
+        if (vmFlingInterval!=null) {
+          cancelTimer(vmFlingInterval);
+          vmFlingInterval=null;
+        }
+      }
+    }
+  }
+  private class VmWaitClickTask extends TimerTask{
+    @Override
+    public void run() {
+      vmOnWaitClick=false;
+      Log.d(_TAG,"MOUSE UP");
+      mouseEv(2,0,0,0,0,0);
+      if (vmWaitClick!=null) {
+        cancelTimer(vmWaitClick);
+        vmWaitClick = null;
+      }
+    }
+  }
+
+  private void cancelTimer(Timer timer){
+    try {
+      timer.cancel();
+    }catch (Exception ignored){}
+  }
+
+  private void initVirtualMouse(){
+    /* Handle Touch Event */
+    webLayout.setTouchListener(ev -> {
+      /* Ignore it */
+      if (!isCursorVisible) return false;
+
+      switch(ev.getAction()){
+        case MotionEvent.ACTION_DOWN:
+          vmCurrX=vmCurrY=vmVelocityX=vmVelocityY=0;
+          vmMoved=false;
+          vmIs2Finger=(ev.getPointerCount()>1);
+          vmDowned=true;
+          vmDownTick=tick();
+          vmLastX=ev.getX(0);
+          vmLastY=ev.getY(0);
+          vmIsScroll=(vmLastX>webLayout.getWidth()-dpx(50));
+          if (vmMoveInterval!=null){
+            cancelTimer(vmFlingInterval);
+            vmFlingInterval=null;
+          }
+          if (vmWaitClick!=null){
+            cancelTimer(vmWaitClick);
+            vmWaitClick=null;
+          }
+          if (vmMoveInterval!=null) cancelTimer(vmMoveInterval);
+          vmMoveInterval=new Timer();
+          vmMoveInterval.scheduleAtFixedRate(new VmMoveTask(),0,8);
+          break;
+        case MotionEvent.ACTION_UP:
+          if (vmMoveInterval!=null) {
+            cancelTimer(vmMoveInterval);
+            vmMoveInterval=null;
+          }
+          if (vmDowned){
+            if (vmOnWaitClick){
+              if(vmMoved){
+                if (!(vmIsScroll||vmIs2Finger)){
+                  Log.d(_TAG,"DRAG UP");
+                  mouseEv(7,0,0,0,0,tick()-vmDragTick);
+                  Log.d(_TAG,"MOUSE UP");
+                  mouseEv(2,0,0,0,0,0);
+                }
+                vmOnWaitClick=false;
+              }
+              else if (!vmIsScroll){
+                Log.d(_TAG,"MOUSE UP");
+                mouseEv(2,0,0,0,0,0);
+                Log.d(_TAG,"MOUSE DOWN");
+                mouseEv(1,0,0,0,0,0);
+                if (vmWaitClick!=null)
+                  cancelTimer(vmWaitClick);
+                vmWaitClick=new Timer();
+                vmWaitClick.schedule(new VmWaitClickTask(),400);
+              }
+            }
+            else{
+              if (vmMoved){
+                vmFlingScroll=(vmIsScroll||vmIs2Finger);
+                if (vmVelocityX!=0f||vmVelocityY!=0f){
+                  Log.d(_TAG,"FLING START");
+                  if (vmFlingInterval!=null)
+                    cancelTimer(vmFlingInterval);
+                  vmFlingInterval=new Timer();
+                  vmFlingInterval.scheduleAtFixedRate(new VmFlingTask(),0,16);
+                }
+              }
+              else if (!vmIsScroll){
+                if (!vmIs2Finger) {
+                  Log.d(_TAG, "MOUSE DOWN");
+                  mouseEv(1, 0, 0, 0, 0, 0);
+                  vmOnWaitClick = true;
+                  if (vmWaitClick!=null)
+                    cancelTimer(vmWaitClick);
+                  vmWaitClick=new Timer();
+                  vmWaitClick.schedule(new VmWaitClickTask(), 400);
+                }
+                else{
+                  Log.d(_TAG,"RIGHT MOUSE DOWN");
+                  mouseEv(3,0,0,0,0,0);
+                  Log.d(_TAG,"RIGHT MOUSE UP");
+                  mouseEv(4,0,0,0,0,0);
+                }
+              }
+            }
+          }
+          vmDowned=vmMoved=vmIsScroll=vmIs2Finger=false;
+          break;
+        case MotionEvent.ACTION_MOVE:
+          vmCurrX+=ev.getX(0)-vmLastX;
+          vmCurrY+=ev.getY(0)-vmLastY;
+          vmLastX=ev.getX(0);
+          vmLastY=ev.getY(0);
+          break;
+        default:
+          if (!vmIs2Finger) {
+            vmIs2Finger = (ev.getPointerCount() > 1);
+          }
+          Log.d(_TAG,ev.toString());
+          Log.d(_TAG,"VAL = "+ev.getAction());
+      }
+      // Log.d(_TAG,ev.toString());
+      return true;
+    });
   }
 }

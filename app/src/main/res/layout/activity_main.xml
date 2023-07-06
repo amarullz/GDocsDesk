@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
-    <RelativeLayout
+    <com.amarullz.app.googledocs.WebLayout
         android:id="@+id/weblayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +19,7 @@
             android:focusable="true"
             android:focusedByDefault="true"
             android:focusableInTouchMode="true"
-            />
+            tools:ignore="UnusedAttribute" />
         <ImageView
             android:layout_marginLeft="-32dp"
             android:layout_marginTop="-32dp"
@@ -27,20 +27,23 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/cursor_default"
-            tools:ignore="ContentDescription,RtlHardcoded" />
-    </RelativeLayout>
+            tools:ignore="ContentDescription,RtlHardcoded,VisualLintBounds" />
+    </com.amarullz.app.googledocs.WebLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_fullscreen"
-        android:tooltipText="@string/fab_fullscreen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_button_margin"
-        app:fabSize="mini"
+        android:contentDescription="@string/fab_fullscreen"
         android:rotation="180"
-        app:srcCompat="@drawable/ic_fullscreen"
+        android:tooltipText="@string/fab_fullscreen"
         app:elevation="10dp"
-        app:tint="@android:color/white" />
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_fullscreen"
+        app:tint="@android:color/white"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_mouse"
@@ -53,7 +56,9 @@
         android:rotation="180"
         app:srcCompat="@drawable/ic_mouse"
         app:elevation="10dp"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
+        android:contentDescription="@string/fab_mouse"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_zoomin"
@@ -66,7 +71,9 @@
         android:rotation="180"
         app:srcCompat="@drawable/ic_zoom_in"
         app:elevation="10dp"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
+        android:contentDescription="@string/fab_zoom_in"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_zoomout"
@@ -79,7 +86,9 @@
         android:rotation="180"
         app:srcCompat="@drawable/ic_zoom_out"
         app:elevation="10dp"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
+        android:contentDescription="@string/fab_zoom_out" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -91,7 +100,9 @@
         android:rotation="0"
         app:elevation="20dp"
         app:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_settings" />
+        app:srcCompat="@drawable/ic_settings"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
+        android:contentDescription="@string/fab_settings" />
 
 
 </FrameLayout>
