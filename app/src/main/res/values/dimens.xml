@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fab_move_zoomout">-60dp</dimen>
+    <dimen name="fab_move_zoomin">-110dp</dimen>
+    <dimen name="fab_move_mouse">-160dp</dimen>
+    <dimen name="fab_move_fullscreen">-210dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_button_margin">20dp</dimen>
+</resources>

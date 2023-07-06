@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
-
-    <WebView
-        android:background="@color/purple_700"
-        android:id="@+id/webview"
+    <RelativeLayout
+        android:id="@+id/weblayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusable="true"
-        android:focusedByDefault="true"
-        android:focusableInTouchMode="true"
-        />
+        tools:ignore="UselessParent">
+        <WebView
+            android:background="@color/purple_700"
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusedByDefault="true"
+            android:focusableInTouchMode="true"
+            />
+        <ImageView
+            android:layout_marginLeft="-20dp"
+            android:layout_marginTop="-20dp"
+            android:id="@+id/cursor"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/cursor_default"
+            tools:ignore="ContentDescription,RtlHardcoded" />
+    </RelativeLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_fullscreen"
+        android:tooltipText="@string/fab_fullscreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        app:fabSize="mini"
+        android:rotation="180"
+        app:srcCompat="@drawable/ic_fullscreen"
+        app:elevation="10dp"
+        app:tint="@android:color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_mouse"
+        android:tooltipText="@string/fab_mouse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        app:fabSize="mini"
+        android:rotation="180"
+        app:srcCompat="@drawable/ic_mouse"
+        app:elevation="10dp"
+        app:tint="@android:color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_zoomin"
+        android:tooltipText="@string/fab_zoom_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        app:fabSize="mini"
+        android:rotation="180"
+        app:srcCompat="@drawable/ic_zoom_in"
+        app:elevation="10dp"
+        app:tint="@android:color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_zoomout"
+        android:tooltipText="@string/fab_zoom_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        app:fabSize="mini"
+        android:rotation="180"
+        app:srcCompat="@drawable/ic_zoom_out"
+        app:elevation="10dp"
+        app:tint="@android:color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:tooltipText="@string/fab_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:rotation="0"
+        app:elevation="20dp"
+        app:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_settings" />
+
 
 </FrameLayout>
