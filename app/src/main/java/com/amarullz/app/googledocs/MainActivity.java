@@ -1,9 +1,12 @@
 package com.amarullz.app.googledocs;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.jetbrains.annotations.NotNull;
 
 public class MainActivity extends AppCompatActivity {
   private DocsView doc;
@@ -34,4 +37,10 @@ public class MainActivity extends AppCompatActivity {
     super.onRestoreInstanceState(savedInstanceState);
     doc.onRestoreInstanceState(savedInstanceState);
   }
+  @Override
+  public void onConfigurationChanged(@NotNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    doc.updateConfig(newConfig);
+  }
+
 }

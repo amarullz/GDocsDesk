@@ -32,7 +32,8 @@
         <activity
             android:taskAffinity="@string/task_codeserver"
             android:name=".MainActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|colorMode|density|fontScale|fontWeightAdjustment|layoutDirection|locale|mcc|mnc|navigation|screenLayout|smallestScreenSize|touchscreen|uiMode"
+            android:launchMode="singleInstance"
             android:hardwareAccelerated="true"
             android:icon="@mipmap/ic_codeserver"
             android:label="@string/app_codeserver"
@@ -46,8 +47,9 @@
         <activity
             android:taskAffinity="@string/task_codeserver_remote"
             android:name=".CodeServerRemoteActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|colorMode|density|fontScale|fontWeightAdjustment|layoutDirection|locale|mcc|mnc|navigation|screenLayout|smallestScreenSize|touchscreen|uiMode"
             android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:icon="@mipmap/ic_codeserver"
             android:label="@string/app_codeserver_remote"
             android:exported="true">
@@ -59,8 +61,9 @@
         <activity
             android:taskAffinity="@string/task_docs"
             android:name=".DocsActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|colorMode|density|fontScale|fontWeightAdjustment|layoutDirection|locale|mcc|mnc|navigation|screenLayout|smallestScreenSize|touchscreen|uiMode"
             android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:label="@string/app_docs"
             android:icon="@mipmap/ic_docs"
             android:exported="true">
@@ -72,8 +75,9 @@
         <activity
             android:taskAffinity="@string/task_sheets"
             android:name=".SheetActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|colorMode|density|fontScale|fontWeightAdjustment|layoutDirection|locale|mcc|mnc|navigation|screenLayout|smallestScreenSize|touchscreen|uiMode"
             android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:label="@string/app_sheets"
             android:icon="@mipmap/ic_sheets"
             android:exported="true">
@@ -85,10 +89,11 @@
         <activity
             android:taskAffinity="@string/task_slides"
             android:name=".SlideActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|colorMode|density|fontScale|fontWeightAdjustment|layoutDirection|locale|mcc|mnc|navigation|screenLayout|smallestScreenSize|touchscreen|uiMode"
             android:hardwareAccelerated="true"
             android:label="@string/app_slides"
             android:icon="@mipmap/ic_slides"
+            android:launchMode="singleInstance"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

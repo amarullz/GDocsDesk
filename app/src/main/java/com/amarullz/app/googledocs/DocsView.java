@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -178,22 +181,26 @@ public class DocsView {
 
   private boolean isSoftkeyVisible=false;
   private void setSoftKeyboard(boolean state){
-    InputMethodManager manager = (InputMethodManager) activity.getSystemService( Context.INPUT_METHOD_SERVICE);
+    InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
     if (state){
-      manager.showSoftInput(webLayout, 0);
+      manager.showSoftInput(webView, 0);
       fabSoftkey.setImageResource(R.drawable.ic_keyboard_hide);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         fabSoftkey.setTooltipText(activity.getResources().getString(R.string.fab_hide_keyboard));
       }
     }
     else{
-      manager.hideSoftInputFromWindow(webLayout.getWindowToken(), 0);
+      manager.hideSoftInputFromWindow(webView.getWindowToken(), 0);
       fabSoftkey.setImageResource(R.drawable.ic_keyboard);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         fabSoftkey.setTooltipText(activity.getResources().getString(R.string.fab_show_keyboard));
       }
     }
     isSoftkeyVisible=state;
+  }
+  public void updateConfig(@NotNull Configuration newConfig) {
+    Log.d(_TAG,"Config = "+newConfig);
+    updateWindowFocus();
   }
 
   /* Init Floating Action Buttons */
@@ -361,6 +368,7 @@ public class DocsView {
       public void onPageFinished(WebView view, String url) {
         /* Add Clipboard Support & Tab Handling */
         super.onPageFinished(view, url);
+        Log.d(_TAG,"PAGE Loaded");
         webView.evaluateJavascript("window.addEventListener('keydown',function" +
                 "(e){console.log('CCLOG KEY = '+e.keyCode); if (e.keyCode==9){e" +
                 ".preventDefault();" +
@@ -375,10 +383,11 @@ public class DocsView {
       }
     });
     webView.addJavascriptInterface(new DocViewJsInterface(), "_DOCJSAPI");
+
     webView.loadUrl(url);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      webLayout.setOnCapturedPointerListener((view, event) -> {
+      webView.setOnCapturedPointerListener((view, event) -> {
         if (event.getAction()==MotionEvent.ACTION_MOVE){
           mouseEv(mouseBtnDown?5:0, dpx(event.getX()), dpx(event.getY()), 0, 0, 0);
         }
@@ -401,7 +410,7 @@ public class DocsView {
             mouseEv(2,0,0,0,0,0);
             mouseEv(7,0,0,0,0,0);
           }
-          Log.d("DOCSLOG", "ACTION BUTTON = " + event.getActionButton());
+          Log.d(_TAG, "ACTION BUTTON = " + event.getActionButton());
         }
         else if (event.getAction()==MotionEvent.ACTION_SCROLL){
           scrollTargetX+=event.getAxisValue(MotionEvent.AXIS_HSCROLL) * dpx(5);
@@ -412,16 +421,20 @@ public class DocsView {
       });
     }
 
-    webView.setFocusableInTouchMode(false);
-    webView.setFocusable(false);
-    webLayout.setFocusableInTouchMode(true);
-    webLayout.setFocusable(true);
-    webLayout.requestFocus();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      webView.setFocusable(View.FOCUSABLE_AUTO);
+    }
+    else{
+      webView.setFocusableInTouchMode(true);
+      webView.setFocusable(true);
+    }
+//    webLayout.setFocusableInTouchMode(true);
+//    webLayout.setFocusable(true);
+    webView.requestFocus();
     setFullscreen(true);
     isCursorVisible=true;
-
     setSoftKeyboard(false);
-
   }
 
   private Timer vmScrollFlingInterval=null;
@@ -461,11 +474,14 @@ public class DocsView {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       mouseBtnDown=false;
       if (active) {
-        Log.d("DOCSLOG", "WEBVIEW CLICK");
-        webLayout.requestPointerCapture();
+        Log.d(_TAG, "Request Pointer Capture");
+        webView.requestPointerCapture();
+        webView.dispatchWindowFocusChanged(true);
       }
       else{
-        webLayout.releasePointerCapture();
+        Log.d(_TAG, "Release Pointer Capture");
+        webView.releasePointerCapture();
+        webView.dispatchWindowFocusChanged(false);
       }
     }
   }
@@ -474,6 +490,7 @@ public class DocsView {
   public class DocViewJsInterface{
     @JavascriptInterface
     public String readClipboardText() {
+      Log.d(_TAG,"JAVASCRIPT ReadClipboard");
       ClipboardManager clipboard =
           (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
       ClipData dat=clipboard.getPrimaryClip();
@@ -773,7 +790,7 @@ public class DocsView {
   private void initVirtualMouse(){
     /* Handle Key Event */
     webLayout.setKeyListener(ev -> {
-      Log.d("DOCSLOG","KEYEV : "+ev);
+//      Log.d(_TAG,"KEYEV : "+ev);
       webView.dispatchKeyEvent(ev);
       return true;
     });
