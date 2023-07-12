@@ -19,6 +19,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
@@ -146,12 +147,27 @@ public class DocsView {
     if (fullscreen){
       activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
               WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+      View decorView = activity.getWindow().getDecorView();
+      int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN
+          | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+          | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+          | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+          | View.SYSTEM_UI_FLAG_IMMERSIVE
+          | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+          | View.SYSTEM_UI_FLAG_LOW_PROFILE
+          | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+      decorView.setSystemUiVisibility(uiOptions);
+
       fabFullscreen.setImageResource(R.drawable.ic_fullscreen_exit);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         fabFullscreen.setTooltipText(activity.getResources().getString(R.string.fab_fullscreen_exit));
       }
     }
     else{
+      View decorView = activity.getWindow().getDecorView();
+      decorView.setSystemUiVisibility(0);
+
       activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
       fabFullscreen.setImageResource(R.drawable.ic_fullscreen);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

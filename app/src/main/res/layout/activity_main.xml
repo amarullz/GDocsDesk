@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:layout_marginBottom="36dp"
     tools:context=".MainActivity">
     <com.amarullz.app.googledocs.WebLayout
         android:id="@+id/weblayout"

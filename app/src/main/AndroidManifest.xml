@@ -35,6 +35,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|colorMode|density|fontScale|fontWeightAdjustment|layoutDirection|locale|mcc|mnc|navigation|screenLayout|smallestScreenSize|touchscreen|uiMode"
             android:launchMode="singleInstance"
             android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustPan"
             android:icon="@mipmap/ic_codeserver"
             android:label="@string/app_codeserver"
             android:exported="true">
