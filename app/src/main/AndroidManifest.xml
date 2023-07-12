@@ -30,16 +30,42 @@
         android:theme="@style/Theme.GoogleDocs"
         tools:targetApi="31">
         <activity
-            android:taskAffinity="@string/task_docs"
+            android:taskAffinity="@string/task_codeserver"
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:hardwareAccelerated="true"
-            android:icon="@mipmap/ic_docs"
-            android:label="@string/app_docs"
+            android:icon="@mipmap/ic_codeserver"
+            android:label="@string/app_codeserver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:taskAffinity="@string/task_codeserver_remote"
+            android:name=".CodeServerRemoteActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:hardwareAccelerated="true"
+            android:icon="@mipmap/ic_codeserver"
+            android:label="@string/app_codeserver_remote"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:taskAffinity="@string/task_docs"
+            android:name=".DocsActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:hardwareAccelerated="true"
+            android:label="@string/app_docs"
+            android:icon="@mipmap/ic_docs"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

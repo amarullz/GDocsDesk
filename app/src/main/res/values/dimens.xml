@@ -4,8 +4,9 @@
     <dimen name="fab_move_zoomout">-110dp</dimen>
     <dimen name="fab_move_zoomin">-160dp</dimen>
     <dimen name="fab_move_mouse">-210dp</dimen>
-    <dimen name="fab_move_home">-60dp</dimen>
-    <dimen name="fab_move_back">-110dp</dimen>
+    <dimen name="fab_move_softkey">-60dp</dimen>
+    <dimen name="fab_move_home">-110dp</dimen>
+    <dimen name="fab_move_back">-160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_button_margin">20dp</dimen>
 </resources>

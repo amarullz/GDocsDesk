@@ -10,6 +10,7 @@
         android:id="@+id/weblayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants"
         tools:ignore="UselessParent">
         <WebView
             android:background="@color/purple_700"
@@ -43,7 +44,26 @@
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_home"
         app:tint="@android:color/white"
+        android:alpha="0"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_softkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        android:contentDescription="@string/fab_home"
+        android:rotation="0"
+        android:translationX="@dimen/fab_move_softkey"
+        android:tooltipText="@string/fab_show_keyboard"
+        app:elevation="10dp"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_keyboard"
+        app:tint="@android:color/white"
+        android:alpha="1"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_back"
         android:layout_width="wrap_content"
@@ -57,6 +77,7 @@
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_back"
         app:tint="@android:color/white"
+        android:alpha="0"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -72,6 +93,7 @@
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_fullscreen"
         app:tint="@android:color/white"
+        android:alpha="0"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -87,6 +109,7 @@
         app:elevation="10dp"
         app:tint="@android:color/white"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
+        android:alpha="0"
         android:contentDescription="@string/fab_mouse"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -102,6 +125,7 @@
         app:elevation="10dp"
         app:tint="@android:color/white"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
+        android:alpha="0"
         android:contentDescription="@string/fab_zoom_in"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -117,6 +141,7 @@
         app:elevation="10dp"
         app:tint="@android:color/white"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
+        android:alpha="0"
         android:contentDescription="@string/fab_zoom_out" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -127,9 +152,11 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:rotation="0"
+        android:alpha=".3"
         app:elevation="20dp"
         app:tint="@android:color/white"
         app:srcCompat="@drawable/ic_settings"
+        android:backgroundTint="#ff007700"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck"
         android:contentDescription="@string/fab_settings" />
 
