@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.VibrationEffect;
@@ -18,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
@@ -27,10 +29,13 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,7 +66,7 @@ public class DocsView {
   /* Settings & Floating Actions Variables */
   private boolean fabOpened=false;
   private boolean isFullscreen=false;
-  private int zoomSize=0;
+  private int zoomSize=1;
   private Toast zoomToast=null;
   private final FloatingActionButton fab;
   private final FloatingActionButton fabMouse;
@@ -70,6 +75,7 @@ public class DocsView {
   private final FloatingActionButton fabFullscreen;
   private final FloatingActionButton fabHome;
   private final FloatingActionButton fabBack;
+  private final FloatingActionButton fabSoftkey;
 
   /* Helpers */
   private static long tick(){
@@ -94,6 +100,7 @@ public class DocsView {
       fabFullscreen.animate().rotation(0);
       fabHome.animate().rotation(0);
       fabBack.animate().rotation(0);
+      fabSoftkey.animate().rotation(0);
       fab.animate().rotation(90);
 
       fabMouse.animate().alpha(1);
@@ -102,6 +109,7 @@ public class DocsView {
       fabFullscreen.animate().alpha(1);
       fabHome.animate().alpha(1);
       fabBack.animate().alpha(1);
+      fabSoftkey.animate().alpha(1);
       fab.animate().alpha(1);
     }
     else{
@@ -118,6 +126,7 @@ public class DocsView {
       fabFullscreen.animate().rotation(90);
       fabHome.animate().rotation(90);
       fabBack.animate().rotation(90);
+      fabSoftkey.animate().rotation(0);
       fab.animate().rotation(0);
 
       fabMouse.animate().alpha(0);
@@ -126,6 +135,7 @@ public class DocsView {
       fabFullscreen.animate().alpha(0);
       fabHome.animate().alpha(0);
       fabBack.animate().alpha(0);
+      fabSoftkey.animate().alpha(0.3f);
       fab.animate().alpha(0.3f);
     }
     fabOpened=show;
@@ -169,12 +179,36 @@ public class DocsView {
     zoomToast.show();
   }
 
+  private boolean isSoftkeyVisible=false;
+  private void setSoftKeyboard(boolean state){
+    InputMethodManager manager = (InputMethodManager) activity.getSystemService( Context.INPUT_METHOD_SERVICE);
+    if (state){
+      manager.showSoftInput(webLayout, 0);
+      fabSoftkey.setImageResource(R.drawable.ic_keyboard_hide);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        fabSoftkey.setTooltipText(activity.getResources().getString(R.string.fab_hide_keyboard));
+      }
+    }
+    else{
+      manager.hideSoftInputFromWindow(webLayout.getWindowToken(), 0);
+      fabSoftkey.setImageResource(R.drawable.ic_keyboard);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        fabSoftkey.setTooltipText(activity.getResources().getString(R.string.fab_show_keyboard));
+      }
+    }
+    isSoftkeyVisible=state;
+  }
+
   /* Init Floating Action Buttons */
-  public void initFab(){
+  private void initFab(){
     /* Fullscreen Button */
     fabFullscreen.setOnClickListener(v->{
       setFullscreen(!isFullscreen);
       fabShow(false);
+    });
+
+    fabSoftkey.setOnClickListener(v->{
+      setSoftKeyboard(!isSoftkeyVisible);
     });
 
     /* Virtual Mouse */
@@ -238,6 +272,7 @@ public class DocsView {
     fabFullscreen=activity.findViewById(R.id.fab_fullscreen);
     fabHome=activity.findViewById(R.id.fab_home);
     fabBack=activity.findViewById(R.id.fab_back);
+    fabSoftkey=activity.findViewById(R.id.fab_softkey);
     initFab();
 
     /* Init WebView */
@@ -285,12 +320,11 @@ public class DocsView {
     webSettings.setGeolocationEnabled(true);
     webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
     webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-    webView.setFocusableInTouchMode(true);
-    webView.setFocusable(true);
+
     webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
     webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
-    webView.setInitialScale(100);
+    webView.setInitialScale(125);
 
     /* WebView Client */
     webView.setWebViewClient(new WebViewClient() {
@@ -347,43 +381,55 @@ public class DocsView {
     webView.loadUrl(url);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      webView.setOnCapturedPointerListener(new View.OnCapturedPointerListener() {
-        @Override
-        public boolean onCapturedPointer(View view, MotionEvent event) {
-          if (event.getAction()==MotionEvent.ACTION_MOVE){
-            mouseEv(mouseBtnDown?5:0, dpx(event.getX()), dpx(event.getY()), 0, 0, 0);
-          }
-          else if (event.getAction()==MotionEvent.ACTION_BUTTON_PRESS){
-            if (event.getActionButton()==MotionEvent.BUTTON_SECONDARY){
-              mouseEv(3,0,0,0,0,0);
-            }
-            else{
-              mouseBtnDown=true;
-              mouseEv(1,0,0,0,0,0);
-              mouseEv(6,0,0,0,0,0);
-            }
-          }
-          else if (event.getAction()==MotionEvent.ACTION_BUTTON_RELEASE){
-            if (event.getActionButton()==MotionEvent.BUTTON_SECONDARY){
-              mouseEv(4,0,0,0,0,0);
-            }
-            else{
-              mouseBtnDown=false;
-              mouseEv(2,0,0,0,0,0);
-              mouseEv(7,0,0,0,0,0);
-            }
-            Log.d("DOCSLOG", "ACTION BUTTON = " + event.getActionButton());
-          }
-          else if (event.getAction()==MotionEvent.ACTION_SCROLL){
-            scrollTargetX+=event.getAxisValue(MotionEvent.AXIS_HSCROLL) * dpx(5);
-            scrollTargetY+=event.getAxisValue(MotionEvent.AXIS_VSCROLL) * dpx(5);
-            startFlingScroll();
-          }
-          return true;
+      webLayout.setOnCapturedPointerListener((view, event) -> {
+        if (event.getAction()==MotionEvent.ACTION_MOVE){
+          mouseEv(mouseBtnDown?5:0, dpx(event.getX()), dpx(event.getY()), 0, 0, 0);
         }
+        else if (event.getAction()==MotionEvent.ACTION_BUTTON_PRESS){
+          if (event.getActionButton()==MotionEvent.BUTTON_SECONDARY){
+            mouseEv(3,0,0,0,0,0);
+          }
+          else{
+            mouseBtnDown=true;
+            mouseEv(1,0,0,0,0,0);
+            mouseEv(6,0,0,0,0,0);
+          }
+        }
+        else if (event.getAction()==MotionEvent.ACTION_BUTTON_RELEASE){
+          if (event.getActionButton()==MotionEvent.BUTTON_SECONDARY){
+            mouseEv(4,0,0,0,0,0);
+          }
+          else{
+            mouseBtnDown=false;
+            mouseEv(2,0,0,0,0,0);
+            mouseEv(7,0,0,0,0,0);
+          }
+          Log.d("DOCSLOG", "ACTION BUTTON = " + event.getActionButton());
+        }
+        else if (event.getAction()==MotionEvent.ACTION_SCROLL){
+          scrollTargetX+=event.getAxisValue(MotionEvent.AXIS_HSCROLL) * dpx(5);
+          scrollTargetY+=event.getAxisValue(MotionEvent.AXIS_VSCROLL) * dpx(5);
+          startFlingScroll();
+        }
+        return true;
       });
     }
+
+    webView.setFocusableInTouchMode(false);
+    webView.setFocusable(false);
+    webLayout.setFocusableInTouchMode(true);
+    webLayout.setFocusable(true);
+    webLayout.requestFocus();
+    setFullscreen(true);
     isCursorVisible=true;
+
+    KeyboardVisibilityEvent.setEventListener(
+    activity,
+    isOpen -> {
+      Log.d("DOCSLOG","ON KEYBOARD VIS = "+isOpen);
+      setSoftKeyboard(isOpen);
+    });
+
   }
 
   private Timer vmScrollFlingInterval=null;
@@ -483,6 +529,19 @@ public class DocsView {
   private void setCursorVisibility(boolean visible){
     cursor.setVisibility(visible?View.VISIBLE:View.INVISIBLE);
     isCursorVisible=visible;
+
+    if (visible) {
+      fabMouse.setImageResource(R.drawable.ic_touch);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        fabMouse.setTooltipText(activity.getResources().getString(R.string.fab_touch));
+      }
+    }
+    else{
+      fabMouse.setImageResource(R.drawable.ic_mouse);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        fabMouse.setTooltipText(activity.getResources().getString(R.string.fab_mouse));
+      }
+    }
   }
   private int dpx(float dp) {
     final float scale = activity.getResources().getDisplayMetrics().density;
@@ -720,6 +779,12 @@ public class DocsView {
   }
 
   private void initVirtualMouse(){
+    /* Handle Key Event */
+    webLayout.setKeyListener(ev -> {
+      Log.d("DOCSLOG","KEYEV : "+ev);
+      webView.dispatchKeyEvent(ev);
+      return false;
+    });
     /* Handle Touch Event */
     webLayout.setTouchListener(ev -> {
       /* Ignore it */
@@ -822,5 +887,14 @@ public class DocsView {
       // Log.d(_TAG,ev.toString());
       return true;
     });
+  }
+
+  public void onSaveInstanceState(@NonNull Bundle outState)
+  {
+    webView.saveState(outState);
+  }
+  public void onRestoreInstanceState(Bundle savedInstanceState)
+  {
+    webView.restoreState(savedInstanceState);
   }
 }

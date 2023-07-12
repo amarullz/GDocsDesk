@@ -8,11 +8,16 @@
     <string name="fab_zoom_in">Perbesar</string>
     <string name="fab_zoom_out">Perkecil</string>
     <string name="fab_mouse">Emulasi Mouse</string>
+    <string name="fab_touch">Mode Sentuh</string>
     <string name="fab_fullscreen">Layar Penuh</string>
     <string name="fab_fullscreen_exit">Keluar Layar Penuh</string>
     <string name="fab_settings">Pengaturan</string>
+    <string name="fab_show_keyboard">Tampilkan Keyboard</string>
+    <string name="fab_hide_keyboard">Sembunyikan Keyboard</string>
     <string name="zoom_toast">Zoom %</string>
     <string name="fab_home">Beranda</string>
     <string name="fab_back">Kembali</string>
     <string name="fab_close">Tutup</string>
+    <string name="app_codeserver">Code Server Local</string>
+    <string name="app_codeserver_remote">Code Server Remote</string>
 </resources>

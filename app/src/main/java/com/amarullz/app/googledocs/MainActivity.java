@@ -2,6 +2,7 @@ package com.amarullz.app.googledocs;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -10,7 +11,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    doc=new DocsView(this,"https://docs.google.com/document/");
+    doc=new DocsView(this,"http://127.0.0.1:8080/");
   }
 
   @Override
@@ -19,5 +20,18 @@ public class MainActivity extends AppCompatActivity {
     if (hasFocus) {
       doc.updateWindowFocus();
     }
+  }
+  @Override
+  protected void onSaveInstanceState(@NonNull Bundle outState)
+  {
+    super.onSaveInstanceState(outState);
+    doc.onSaveInstanceState(outState);
+  }
+
+  @Override
+  protected void onRestoreInstanceState(Bundle savedInstanceState)
+  {
+    super.onRestoreInstanceState(savedInstanceState);
+    doc.onRestoreInstanceState(savedInstanceState);
   }
 }

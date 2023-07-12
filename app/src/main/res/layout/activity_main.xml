@@ -45,6 +45,24 @@
         app:tint="@android:color/white"
         android:alpha="0"
         tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_softkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_button_margin"
+        android:contentDescription="@string/fab_home"
+        android:rotation="0"
+        android:translationX="@dimen/fab_move_softkey"
+        android:tooltipText="@string/fab_show_keyboard"
+        app:elevation="10dp"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_keyboard"
+        app:tint="@android:color/white"
+        android:alpha="1"
+        tools:ignore="UnusedAttribute,DuplicateClickableBoundsCheck" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_back"
         android:layout_width="wrap_content"
