@@ -34,9 +34,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
@@ -423,12 +420,7 @@ public class DocsView {
     setFullscreen(true);
     isCursorVisible=true;
 
-    KeyboardVisibilityEvent.setEventListener(
-    activity,
-    isOpen -> {
-      Log.d("DOCSLOG","ON KEYBOARD VIS = "+isOpen);
-      setSoftKeyboard(isOpen);
-    });
+    setSoftKeyboard(false);
 
   }
 
@@ -783,7 +775,7 @@ public class DocsView {
     webLayout.setKeyListener(ev -> {
       Log.d("DOCSLOG","KEYEV : "+ev);
       webView.dispatchKeyEvent(ev);
-      return false;
+      return true;
     });
     /* Handle Touch Event */
     webLayout.setTouchListener(ev -> {
