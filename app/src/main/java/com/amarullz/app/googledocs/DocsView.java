@@ -27,6 +27,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -94,6 +95,14 @@ public class DocsView {
       fabHome.animate().rotation(0);
       fabBack.animate().rotation(0);
       fab.animate().rotation(90);
+
+      fabMouse.animate().alpha(1);
+      fabZoomOut.animate().alpha(1);
+      fabZoomIn.animate().alpha(1);
+      fabFullscreen.animate().alpha(1);
+      fabHome.animate().alpha(1);
+      fabBack.animate().alpha(1);
+      fab.animate().alpha(1);
     }
     else{
       fabMouse.animate().translationY(0);
@@ -110,6 +119,14 @@ public class DocsView {
       fabHome.animate().rotation(90);
       fabBack.animate().rotation(90);
       fab.animate().rotation(0);
+
+      fabMouse.animate().alpha(0);
+      fabZoomOut.animate().alpha(0);
+      fabZoomIn.animate().alpha(0);
+      fabFullscreen.animate().alpha(0);
+      fabHome.animate().alpha(0);
+      fabBack.animate().alpha(0);
+      fab.animate().alpha(0.3f);
     }
     fabOpened=show;
   }
@@ -163,6 +180,7 @@ public class DocsView {
     /* Virtual Mouse */
     fabMouse.setOnClickListener(v->{
       setCursorVisibility(!isCursorVisible);
+      initPointer(isCursorVisible);
       fabShow(false);
     });
 
@@ -327,7 +345,93 @@ public class DocsView {
     });
     webView.addJavascriptInterface(new DocViewJsInterface(), "_DOCJSAPI");
     webView.loadUrl(url);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      webView.setOnCapturedPointerListener(new View.OnCapturedPointerListener() {
+        @Override
+        public boolean onCapturedPointer(View view, MotionEvent event) {
+          if (event.getAction()==MotionEvent.ACTION_MOVE){
+            mouseEv(mouseBtnDown?5:0, dpx(event.getX()), dpx(event.getY()), 0, 0, 0);
+          }
+          else if (event.getAction()==MotionEvent.ACTION_BUTTON_PRESS){
+            if (event.getActionButton()==MotionEvent.BUTTON_SECONDARY){
+              mouseEv(3,0,0,0,0,0);
+            }
+            else{
+              mouseBtnDown=true;
+              mouseEv(1,0,0,0,0,0);
+              mouseEv(6,0,0,0,0,0);
+            }
+          }
+          else if (event.getAction()==MotionEvent.ACTION_BUTTON_RELEASE){
+            if (event.getActionButton()==MotionEvent.BUTTON_SECONDARY){
+              mouseEv(4,0,0,0,0,0);
+            }
+            else{
+              mouseBtnDown=false;
+              mouseEv(2,0,0,0,0,0);
+              mouseEv(7,0,0,0,0,0);
+            }
+            Log.d("DOCSLOG", "ACTION BUTTON = " + event.getActionButton());
+          }
+          else if (event.getAction()==MotionEvent.ACTION_SCROLL){
+            scrollTargetX+=event.getAxisValue(MotionEvent.AXIS_HSCROLL) * dpx(5);
+            scrollTargetY+=event.getAxisValue(MotionEvent.AXIS_VSCROLL) * dpx(5);
+            startFlingScroll();
+          }
+          return true;
+        }
+      });
+    }
+    isCursorVisible=true;
   }
+
+  private Timer vmScrollFlingInterval=null;
+  private float scrollTargetX=0;
+  private float scrollTargetY=0;
+  private class VmScrollFlingTask extends TimerTask{
+    @Override
+    public void run() {
+      if (Math.abs(scrollTargetX)>=1||Math.abs(scrollTargetY)>=1){
+        scrollTargetX=scrollTargetX*0.9f;
+        scrollTargetY=scrollTargetY*0.9f;
+        mouseEv(8,0,0,scrollTargetX,scrollTargetY,0);
+      }
+      else{
+        scrollTargetX=scrollTargetY=0f;
+        if (vmScrollFlingInterval!=null) {
+          cancelTimer(vmScrollFlingInterval);
+          vmScrollFlingInterval=null;
+        }
+      }
+    }
+  }
+  private void startFlingScroll(){
+    if (vmScrollFlingInterval==null) {
+      vmScrollFlingInterval = new Timer();
+      vmScrollFlingInterval.scheduleAtFixedRate(new VmScrollFlingTask(), 0, 16);
+    }
+  }
+
+  private boolean mouseBtnDown=false;
+
+  public void updateWindowFocus(){
+    setCursorVisibility(isCursorVisible);
+    initPointer(isCursorVisible);
+  }
+  private void initPointer(boolean active){
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mouseBtnDown=false;
+      if (active) {
+        Log.d("DOCSLOG", "WEBVIEW CLICK");
+        webLayout.requestPointerCapture();
+      }
+      else{
+        webLayout.releasePointerCapture();
+      }
+    }
+  }
+
 
   public class DocViewJsInterface{
     @JavascriptInterface
@@ -480,8 +584,6 @@ public class DocsView {
         webView.dispatchTouchEvent(ev);
       else
         webView.dispatchGenericMotionEvent(ev);
-      // runOnUiThread(()->setCursorPos(mouseX, mouseY));
-
       setCursorPos(mouseX, mouseY);
     }catch (Exception ignored){}
   }
@@ -597,6 +699,7 @@ public class DocsView {
       }
     }
   }
+
   private class VmWaitClickTask extends TimerTask{
     @Override
     public void run() {

@@ -12,4 +12,12 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     doc=new DocsView(this,"https://docs.google.com/document/");
   }
+
+  @Override
+  public void onWindowFocusChanged(boolean hasFocus) {
+    super.onWindowFocusChanged(hasFocus);
+    if (hasFocus) {
+      doc.updateWindowFocus();
+    }
+  }
 }
