@@ -196,6 +196,7 @@ public class DocsView {
   private void setSoftKeyboard(boolean state){
     InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
     if (state){
+      activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE|WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
       manager.showSoftInput(webView, 0);
       fabSoftkey.setImageResource(R.drawable.ic_keyboard_hide);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -203,6 +204,7 @@ public class DocsView {
       }
     }
     else{
+      activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN|WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
       manager.hideSoftInputFromWindow(webView.getWindowToken(), 0);
       fabSoftkey.setImageResource(R.drawable.ic_keyboard);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
