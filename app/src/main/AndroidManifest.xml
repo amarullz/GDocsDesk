@@ -53,6 +53,7 @@
             android:launchMode="singleInstance"
             android:icon="@mipmap/ic_codeserver"
             android:label="@string/app_codeserver_remote"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -67,6 +68,7 @@
             android:launchMode="singleInstance"
             android:label="@string/app_docs"
             android:icon="@mipmap/ic_docs"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -81,6 +83,7 @@
             android:launchMode="singleInstance"
             android:label="@string/app_sheets"
             android:icon="@mipmap/ic_sheets"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,6 +98,7 @@
             android:label="@string/app_slides"
             android:icon="@mipmap/ic_slides"
             android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
